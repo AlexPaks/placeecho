@@ -9,7 +9,9 @@ export function LoginPage() {
 
   const handleLogin = async () => {
     if (authContext) {
-      await authContext.login(); // Call login without arguments
+      const username = "exampleUsername"; // Replace with actual username input
+      const password = "examplePassword"; // Replace with actual password input
+      await authContext.login(username, password);
     }
   };
 
