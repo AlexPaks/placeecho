@@ -9,6 +9,7 @@ interface UseStoryGeneratorReturn {
   generateStory: (location: LocationData, settings: StorySettings, photo?: string | null) => Promise<void>;
   extendStory: () => Promise<void>;
 }
+const API_BASE =import.meta.env.DEV ? "/api" : config.API_BASE_URL;
 
 export function useStoryGenerator(): UseStoryGeneratorReturn {
   const [story, setStory] = useState<Story | null>(null);
@@ -34,7 +35,7 @@ export function useStoryGenerator(): UseStoryGeneratorReturn {
         setStory(dummyStory);
       } else {
         // Real API call
-        const response = await fetch(`${config.API_BASE_URL}/generate`, {
+        const response = await fetch(`${API_BASE}/generate`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
