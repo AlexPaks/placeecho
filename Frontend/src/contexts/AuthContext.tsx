@@ -32,7 +32,7 @@ export function AuthProvider({
     }
     setLoading(false);
   }, []);
-
+  const API_BASE = import.meta.env.DEV ? "/api" : config.API_BASE_URL;
   const login = async (username: string, password: string) => {
     setLoading(true);
     try {
@@ -48,7 +48,7 @@ export function AuthProvider({
         localStorage.setItem('story_explorer_user', JSON.stringify(dummyUser));
       } else {
         // Real API call
-        const response = await fetch(`${config.API_BASE_URL}/auth/login`, {
+        const response = await fetch(`${API_BASE}/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

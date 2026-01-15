@@ -14,7 +14,7 @@ export function useGeolocation() {
     loading: false,
     error: null
   });
-
+const API_BASE = import.meta.env.DEV ? "/api" : config.API_BASE_URL;
   const getLocation = useCallback(() => {
     if (!navigator.geolocation) {
       setState(prev => ({
@@ -51,7 +51,7 @@ export function useGeolocation() {
         // Real API call
         try {
           // Ensure the timestamp is included in the location data
-          const response = await fetch(`${config.API_BASE_URL}/context/from-gps`, {
+          const response = await fetch(`${API_BASE}/from-gps`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
