@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+import redis
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.core.request_logging import request_logger
@@ -47,6 +48,13 @@ app.add_middleware(CustomCORSMiddleware)
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+redis = redis.asyncio.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0)
+@app.get("/health/redis")
+async def redis_health():
+    await redis.ping()
+    return {"redis": "ok"}
+
 
 app.include_router(generate_router, prefix="/generate", tags=["generate"])
 app.include_router(context_router, prefix="/context", tags=["context"])

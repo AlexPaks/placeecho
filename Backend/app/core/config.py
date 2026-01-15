@@ -18,5 +18,8 @@ class Settings(BaseModel):
     tts_cache_ttl_seconds: int = int(os.getenv("TTS_CACHE_TTL_SECONDS", "604800"))
 
     frontend_origin: str = os.getenv("FRONTEND_ORIGIN", "http://localhost:5173")
+    REDIS_HOST: str = os.getenv("REDIS_HOST", "localhost")
+    REDIS_PORT: int = int(os.getenv("REDIS_PORT", "6379"))
+    mapbox_api_key: str = os.getenv("MAPBOX_API_KEY", "")   
 
 settings = Settings()
