@@ -1,0 +1,45 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      // ✅ כפתור 1: Debug Backend (Poetry -> uvicorn)
+      "name": "Backend: Debug FastAPI (Poetry)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "poetry",
+      "cwd": "${workspaceFolder}/Backend",
+      "args": [
+        "run",
+        "uvicorn",
+        "app.main:app",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "8000"
+      ],
+      "envFile": "${workspaceFolder}/Backend/.env",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+
+    {
+      // ✅ כפתור 2: Debug Frontend (Vite + Chrome) 
+      "name": "Frontend: Debug Vite (Browser)",
+      "type": "pwa-msedge",
+      "request": "launch",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/Frontend/src",
+      "preLaunchTask": "Frontend: dev (Vite)"
+    }
+
+  ],
+
+  "compounds": [
+    {
+      // ✅ כפתור 3: Full Stack
+      "name": "Full Stack: Debug Backend + Frontend",
+      "configurations": ["Backend: Debug FastAPI (Poetry)", "Frontend: Debug Vite (Browser)"],
+      "stopAll": true
+    }
+  ]
+}

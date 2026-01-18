@@ -7,8 +7,9 @@ from app.services.context_service import resolve_from_gps, resolve_from_image
 router = APIRouter()
 
 @router.post("/from-gps", response_model=ContextResponse)
-def from_gps(gps: Gps):
-    return resolve_from_gps(gps)
+async def from_gps(gps: Gps):
+    response = await resolve_from_gps(gps)  # Ensure the coroutine is awaited
+    return response  # Return the Pydantic model directly
 
 @router.post("/from-image", response_model=ContextResponse)
 def from_image(file: UploadFile = File(...)):

@@ -14,7 +14,60 @@ export function useGeolocation() {
     loading: false,
     error: null
   });
-const API_BASE = import.meta.env.DEV ? "/api" : config.API_BASE_URL;
+  const API_BASE = config.API_BASE_URL;
+
+  const setLocation = useCallback(async (
+    gpsData: { lat: number; lng: number },
+    source: 'photo_exif' | 'geolocation'
+  ) => {
+    if (source === 'photo_exif') {
+      console.log('Skipping backend call: location source is photo_exif');
+      setState({
+        location: {
+          latitude: gpsData.lat,
+          longitude: gpsData.lng,
+          placeName: 'Photo EXIF Location',
+          timestamp: Date.now(),
+        },
+        loading: false,
+        error: null,
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE}/context/from-gps`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(gpsData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch location context');
+      }
+
+      const context = await response.json();
+      setState({
+        location: {
+          latitude: gpsData.lat,
+          longitude: gpsData.lng,
+          placeName: context.placeName,
+          timestamp: Date.now(),
+        },
+        loading: false,
+        error: null,
+      });
+    } catch (error) {
+      setState({
+        location: null,
+        loading: false,
+        error: 'Failed to fetch location context',
+      });
+    }
+  }, [API_BASE]);
+
   const getLocation = useCallback(() => {
     if (!navigator.geolocation) {
       setState(prev => ({
@@ -35,7 +88,6 @@ const API_BASE = import.meta.env.DEV ? "/api" : config.API_BASE_URL;
       } = position.coords;
 
       if (config.TEST_MODE) {
-        // Dummy API response for test mode
         const dummyPlaceName = `Test Location (${latitude.toFixed(2)}, ${longitude.toFixed(2)})`;
         setState({
           location: {
@@ -48,39 +100,7 @@ const API_BASE = import.meta.env.DEV ? "/api" : config.API_BASE_URL;
           error: null,
         });
       } else {
-        // Real API call
-        try {
-          // Ensure the timestamp is included in the location data
-          const response = await fetch(`${API_BASE}/from-gps`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ latitude, longitude }),
-          });
-
-          if (!response.ok) {
-            throw new Error('Failed to fetch location context');
-          }
-
-          const context = await response.json();
-          setState({
-            location: {
-              latitude,
-              longitude,
-              placeName: context.placeName,
-              timestamp: Date.now(), // Add current timestamp
-            },
-            loading: false,
-            error: null,
-          });
-        } catch (error) {
-          setState({
-            location: null,
-            loading: false,
-            error: 'Failed to fetch location context',
-          });
-        }
+        await setLocation({ lat: latitude, lng: longitude }, 'geolocation');
       }
     }, error => {
       let errorMessage = 'Unable to retrieve your location';
@@ -97,12 +117,9 @@ const API_BASE = import.meta.env.DEV ? "/api" : config.API_BASE_URL;
         error: errorMessage
       });
     });
-  }, []);
+  }, [setLocation]);
 
-  // Initial load
   useEffect(() => {
-    // Don't auto-load on mount to respect user privacy until requested
-    // or if we already have permission
     navigator.permissions?.query({
       name: 'geolocation'
     }).then(result => {
@@ -111,8 +128,10 @@ const API_BASE = import.meta.env.DEV ? "/api" : config.API_BASE_URL;
       }
     });
   }, [getLocation]);
+
   return {
     ...state,
-    refreshLocation: getLocation
+    refreshLocation: getLocation,
+    setLocation, // Expose setLocation for external use
   };
 }

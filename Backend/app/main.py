@@ -25,6 +25,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # Add CORS middleware to allow frontend requests
 origins = [
     settings.FRONTEND_ORIGIN,  # Frontend development server
+    "http://localhost:5173",  # Additional fallback for localhost
 ]
 
 app.add_middleware(
