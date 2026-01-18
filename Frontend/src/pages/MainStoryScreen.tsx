@@ -95,7 +95,7 @@ export function MainStoryScreen() {
       <main className="max-w-md mx-auto px-4 py-6 space-y-6">
         {/* Location Section */}
         <section>
-          <LocationCard location={location} loading={locationLoading} error={locationError} onRefresh={refreshLocation} />
+          <LocationCard title="Current Location" location={location} loading={locationLoading} error={locationError} onRefresh={refreshLocation} />
         </section>
 
         {/* Camera Section - Only show if no story yet or if we want to regenerate */}

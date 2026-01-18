@@ -9,7 +9,7 @@ interface UseStoryGeneratorReturn {
   generateStory: (location: LocationData, settings: StorySettings, photo?: string | null) => Promise<void>;
   extendStory: () => Promise<void>;
 }
-const API_BASE =import.meta.env.DEV ? "/api" : config.API_BASE_URL;
+const API_BASE =config.API_BASE_URL;
 
 export function useStoryGenerator(): UseStoryGeneratorReturn {
   const [story, setStory] = useState<Story | null>(null);
